@@ -98,6 +98,3 @@ uvicorn main:app --reload
 
 Currently in private beta/early access. Feel free to open issues or submit PRs if you want to help build high-EQ agents!
 
-```
-
-```
