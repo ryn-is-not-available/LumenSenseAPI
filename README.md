@@ -1,3 +1,4 @@
+```markdown
 # LumenSense 🧠 
 **The AI Triage Engine for B2B Sales**
 
@@ -23,8 +24,8 @@ AI bots are great at deflecting tier-1 support tickets, but terrible at closing 
 
 1. **Clone the repository:**
    ```bash
-   git clone [https://github.com/ryn-is-not-available/LumenSenseAPI](https://github.com/ryn-is-not-available/LumenSenseAPI)
-   cd LumenSense
+   git clone [https://github.com/ryn-is-not-available/LumenSenseAPI.git](https://github.com/ryn-is-not-available/LumenSenseAPI.git)
+   cd LumenSenseAPI
 
 ```
 
@@ -86,4 +87,6 @@ This project is fully ready to be deployed on Render, Heroku, or Railway. Simply
 
 ---
 
-*Built by Massek Rayen - [Linkedin](https://www.linkedin.com/in/rayen-messek-206322249/)*
+*Built by Massek Rayen - [Linkedin*](https://www.linkedin.com/in/rayen-messek-206322249/)
+
+```
