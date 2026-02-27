@@ -1,4 +1,3 @@
-```markdown
 # LumenSense 🧠 
 **The AI Triage Engine for B2B Sales**
 
@@ -28,7 +27,7 @@ AI bots are great at deflecting tier-1 support tickets, but terrible at closing 
    cd LumenSenseAPI
 
 ```
-
+```
 2. **Install dependencies:**
 ```bash
 pip install -r requirements.txt
@@ -88,5 +87,3 @@ This project is fully ready to be deployed on Render, Heroku, or Railway. Simply
 ---
 
 *Built by Massek Rayen - [Linkedin*](https://www.linkedin.com/in/rayen-messek-206322249/)
-
-```
