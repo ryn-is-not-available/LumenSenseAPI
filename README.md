@@ -1,97 +1,32 @@
-# LumenSense 🧠 | AI Lead Triage & Sentiment Routing
+# LumenSense 🧠 
+**The AI Triage Engine for B2B Sales**
 
-![LumenSense Architecture](images/placeholder-for-banner.png)
+Stop letting your AI chatbot fumble $50k enterprise leads. LumenSense is a headless AI routing layer that sits between your users and your chatbot. It passively analyzes chat logs in real-time to detect high-intent buyers, instantly routing them to your human sales team via Slack before they bounce.
 
-**LumenSense** is a headless "Psychological Intelligence" microservice designed for B2B revenue teams. It sits between your users and your AI chatbot, analyzing conversation logs in real-time to detect high-value enterprise leads and at-risk customers, instantly routing them to human representatives before deals are lost.
+## 🚀 The Problem We Solve
+AI bots are great at deflecting tier-1 support tickets, but terrible at closing enterprise deals. When a VP of Engineering asks for 150 seats and SOC-2 compliance, they shouldn't get a generic FAQ link. LumenSense intercepts that conversation, analyzes the psychological subtext, and pages a human. 
 
-Stop letting tone-deaf AI agents handle your most important accounts. Let the bots handle the tier-1 support noise, and route the whales directly to your sales floor.
-
-## 🎯 The Business Value
-
-* **Enterprise Lead Routing (Triage):** Automatically identifies high-intent buyers based on behavioral subtext and specific keywords (e.g., "SOC-2", "Enterprise SLA", "50+ seats").
-* **Churn De-escalation:** Detects rising frustration in customer support chats and triggers immediate human handoffs before a cancellation occurs.
-* **Frictionless Handoff:** Integrates seamlessly with Slack, Microsoft Teams, and standard CRM webhooks to ping Account Executives the exact second a hot lead is detected.
-* **Sub-Second Latency:** Powered by Llama-3.3-70b via the Groq API, ensuring zero disruption to your existing chatbot's response times.
-
----
+**Zero spam for the sales team. They only get pinged when a whale is in the net.**
 
 ## ⚙️ How It Works
+1. **Passive Listening:** Send the user's chat message to the LumenSense `/analyze` endpoint.
+2. **Psychological Profiling:** Powered by Llama-3.3-70b (via Groq for sub-second latency), it extracts the user's *Persona*, *Core Concern*, and *Buying Intent (0-100%)*.
+3. **Frictionless Routing:** If Buying Intent hits the threshold (e.g., 80%+), it instantly fires a rich UI card to a Slack channel with a "Take Over Chat" button.
 
-LumenSense operates as a passive API layer. It does not replace your chatbot; it supercharges it.
-
-1. **Ingest:** Your system (Website Bot, Telegram, Zendesk) sends the raw customer message to the LumenSense `/analyze` endpoint.
-2. **Analyze:** The LLM engine profiles the user, extracting *Persona*, *Sentiment*, and *Buying Intent (0-100%)*.
-3. **Action:** * If `Buying Intent < 70%`: LumenSense returns standard metadata, and your AI continues the conversation. Cost: fractions of a cent.
-   * If `Buying Intent ≥ 70%`: LumenSense fires a rich-text webhook to your Sales Team's Slack channel with a "Tactical Dossier" and a one-click button to take over the chat.
-
----
-
-## 📸 Live Demo: The Handoff in Action
-
-*Left: A frustrated enterprise buyer talking to a standard chatbot. Right: The instant Slack alert sent to the human Sales Team.*
-
-![Split Screen Demo](images/demo-placeholder.gif) 
-*(Note: Replace with your actual split-screen GIF/Video once recorded)*
-
----
-
-## 🏗️ Technical Architecture
-
-LumenSense is built for scale and ease of integration by modern engineering teams.
-
-* **Core Framework:** FastAPI (Python)
-* **Inference Engine:** Groq API (Llama-3.3-70b-versatile)
+## 🛠️ Tech Stack
+* **Framework:** FastAPI
+* **LLM Engine:** Groq API (Llama-3)
 * **Data Validation:** Pydantic
-* **Deployment:** Serverless / Containerized (Render)
-* **Alerting:** Native Webhook payloads (Slack Block Kit compatible)
+* **Integrations:** Slack Webhooks (Block Kit)
 
----
-
-## 🔌 API Integration Quickstart
-
-Integrating LumenSense requires just a single HTTP POST request. 
-
-**Endpoint:** `POST /analyze`
-
-**Request Body:**
-```json
-{
-  "chat_log": "I like the platform, but my CTO won't approve the budget unless we can confirm you have on-premise hosting options and SOC-2 compliance."
-}
-
-```
-
-**Response Payload:**
-
-```json
-{
-  "profile": {
-    "persona": "Technical Decision Maker",
-    "sentiment": "Cautious but interested",
-    "buying_intent": 85
-  },
-  "insights": {
-    "main_concern": "Security and compliance standards",
-    "tactical_advice": "Bypass the standard pitch. Immediately provide SOC-2 documentation and route to a technical Account Executive."
-  },
-  "is_hot_lead": true
-}
-
-```
-
-*(Note: When `is_hot_lead` returns `true`, the LumenSense backend can be configured to automatically dispatch a webhook to your CRM or Slack workspace).*
-
----
-
-## 💻 Local Development
+## 💻 Local Setup & Installation
 
 1. **Clone the repository:**
-```bash
-git clone [https://github.com/ryn-is-not-available/LumenSenseAPI.git](https://github.com/ryn-is-not-available/LumenSenseAPI.git)
-cd LumenSenseAPI
+   ```bash
+   git clone [https://github.com/ryn-is-not-available/LumenSenseAPI](https://github.com/ryn-is-not-available/LumenSenseAPI)
+   cd LumenSense
 
 ```
-
 
 2. **Install dependencies:**
 ```bash
@@ -100,11 +35,11 @@ pip install -r requirements.txt
 ```
 
 
-3. **Environment Setup:**
-Create a `.env` file and add your credentials:
+3. **Set up your environment variables:**
+Create a `.env` file in the root directory and add your API keys:
 ```env
 GROQ_API_KEY=your_groq_api_key_here
-SLACK_WEBHOOK_URL=your_optional_slack_url_here
+SLACK_WEBHOOK_URL=your_slack_webhook_url_here
 
 ```
 
@@ -116,4 +51,39 @@ uvicorn main:app --reload
 ```
 
 
-*Interactive Swagger Documentation is automatically generated at `http://127.0.0.1:8000/docs*`
+The API will be live at `http://127.0.0.1:8000`.
+
+## 📡 API Usage
+
+**Endpoint:** `POST /analyze`
+
+**Request Body:**
+
+```json
+{
+  "chat_log": "Hi team. We are migrating off your competitor and looking to deploy 150 enterprise licenses by the end of the month. Do you offer SAML SSO?"
+}
+
+```
+
+**Response (and simultaneous Slack Ping):**
+
+```json
+{
+  "persona": "Technical Decision Maker",
+  "sentiment": "urgent",
+  "buying_intent_score": 95,
+  "main_concern": "Enterprise security and SAML SSO",
+  "tactical_advice": "Route immediately to an Account Executive. Emphasize security compliance.",
+  "is_hot_lead": true
+}
+
+```
+
+## ☁️ Deployment
+
+This project is fully ready to be deployed on Render, Heroku, or Railway. Simply connect your GitHub repo, set your Build Command to `pip install -r requirements.txt`, your Start Command to `uvicorn main:app --host 0.0.0.0 --port $PORT`, and paste your environment variables into the platform's dashboard.
+
+---
+
+*Built by Massek Rayen - [Linkedin](https://www.linkedin.com/in/rayen-messek-206322249/)*

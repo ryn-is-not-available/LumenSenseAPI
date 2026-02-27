@@ -27,7 +27,7 @@ def fire_slack_alert(profile, insights, original_text):
         print("⚠️ No Slack Webhook configured. Skipping alert.")
         return
 
-    # Constructing a beautiful Slack UI Card using Block Kit
+    # Constructing a Slack UI Card using Block Kit
     slack_payload = {
         "blocks": [
             {
@@ -78,7 +78,7 @@ def fire_slack_alert(profile, insights, original_text):
                             "text": "Take Over Chat ⚡",
                             "emoji": True
                         },
-                        "style": "primary", # Makes the button bright green
+                        "style": "primary", 
                         "url": "https://your-crm-dashboard.com" # Where the sales rep goes
                     }
                 ]
@@ -102,7 +102,7 @@ async def analyze_chat(request: ChatRequest):
         raise HTTPException(status_code=400, detail="chat_log cannot be empty")
     
     try:
-        # Pass the data to the Chef
+        # Pass the data to the LumenSenseAnalyzer and get the insights
         result = analyzer.analyze(request.chat_log)
         
         # 🎯 NEW: Triage check! Wake up the human sales team if it's a whale.
