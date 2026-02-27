@@ -1,104 +1,62 @@
-# LumenSense API 🧠
-An open-source "Psychological Intelligence" layer for AI agents. 
+# LumenSense 🧠 | AI Lead Triage & Sentiment Routing
 
-LumenSense acts as a microservice that analyzes the raw text of a conversation in real-time and feeds your AI agent a "tactical dossier" on how to pivot its strategy based on the user's psychological state.
+![LumenSense Architecture](images/placeholder-for-banner.png)
 
-## 🚀 Features
-* **Real-time Psychological Profiling:** Extracts User Persona, Sentiment, and Buying Intent.
-* **Tactical Advice Engine:** Gives your chatbot specific instructions on how to close a deal or de-escalate frustration.
-* **Sub-second Inference:** Powered by Llama-3.3-70b via the Groq API.
-* **Headless Architecture:** Built with FastAPI. It can plug into any platform that can make a POST request.
+**LumenSense** is a headless "Psychological Intelligence" microservice designed for B2B revenue teams. It sits between your users and your AI chatbot, analyzing conversation logs in real-time to detect high-value enterprise leads and at-risk customers, instantly routing them to human representatives before deals are lost.
 
----
+Stop letting tone-deaf AI agents handle your most important accounts. Let the bots handle the tier-1 support noise, and route the whales directly to your sales floor.
 
-## 🏗️ Architecture Stack
-* **Framework:** FastAPI (Python)
-* **Validation:** Pydantic
-* **AI Engine:** Groq (Llama-3.3-70b-versatile)
-* **Deployment:** Serverless on Render
+## 🎯 The Business Value
+
+* **Enterprise Lead Routing (Triage):** Automatically identifies high-intent buyers based on behavioral subtext and specific keywords (e.g., "SOC-2", "Enterprise SLA", "50+ seats").
+* **Churn De-escalation:** Detects rising frustration in customer support chats and triggers immediate human handoffs before a cancellation occurs.
+* **Frictionless Handoff:** Integrates seamlessly with Slack, Microsoft Teams, and standard CRM webhooks to ping Account Executives the exact second a hot lead is detected.
+* **Sub-Second Latency:** Powered by Llama-3.3-70b via the Groq API, ensuring zero disruption to your existing chatbot's response times.
 
 ---
 
-## 🔌 Integration Showcase: Telegram Bot (Proof of Concept)
+## ⚙️ How It Works
 
-LumenSense is designed as a headless microservice. It doesn't matter where your users are chatting—if your platform can make a POST request, it can have emotional intelligence.
+LumenSense operates as a passive API layer. It does not replace your chatbot; it supercharges it.
 
-To prove this, we built a lightweight Telegram Bot that consumes the LumenSense API in real-time. 
-
-### How it Works:
-1. **The Client:** A Python-based Telegram Bot (`pyTelegramBotAPI`) listens for customer messages.
-2. **The Request:** It forwards the raw text to our deployed FastAPI endpoint.
-3. **The Response:** The API's Groq/Llama-3 engine analyzes the psychological subtext.
-4. **The Result:** The bot formats the JSON dossier and alerts the user (e.g., flagging "Hot Leads" instantly).
-
-### 📸 Live Demo 
-
-**1. The API Documentation (Swagger UI)**
-![Swagger UI Screenshot](images/swagger.png)
-
-**2. The Telegram Bot in Action**
-![Telegram Bot Demo](images/telegram.png)
-
-*(Note: In future updates, we will be releasing drop-in SDKs and webhook templates to make integrating LumenSense into platforms like Discord, Slack, and Zendesk as easy as copy-pasting an API key.)*
+1. **Ingest:** Your system (Website Bot, Telegram, Zendesk) sends the raw customer message to the LumenSense `/analyze` endpoint.
+2. **Analyze:** The LLM engine profiles the user, extracting *Persona*, *Sentiment*, and *Buying Intent (0-100%)*.
+3. **Action:** * If `Buying Intent < 70%`: LumenSense returns standard metadata, and your AI continues the conversation. Cost: fractions of a cent.
+   * If `Buying Intent ≥ 70%`: LumenSense fires a rich-text webhook to your Sales Team's Slack channel with a "Tactical Dossier" and a one-click button to take over the chat.
 
 ---
 
-## 💻 Local Installation & Setup
+## 📸 Live Demo: The Handoff in Action
 
-If you want to run the core API locally, follow these steps:
+*Left: A frustrated enterprise buyer talking to a standard chatbot. Right: The instant Slack alert sent to the human Sales Team.*
 
-**1. Clone the repository**
-```bash
-git clone [https://github.com/ryn-is-not-available/LumenSenseAPI]
-cd LumenSenseAPI
-
-```
-
-**2. Create a virtual environment**
-
-```bash
-python -m venv venv
-venv\Scripts\activate  # On Windows
-# source venv/bin/activate  # On macOS/Linux
-
-```
-
-**3. Install dependencies**
-
-```bash
-pip install -r requirements.txt
-
-```
-
-**4. Set up Environment Variables**
-Create a `.env` file in the root directory and add your Groq API key:
-
-```env
-GROQ_API_KEY=your_groq_api_key_here
-
-```
-
-**5. Run the server**
-
-```bash
-uvicorn main:app --reload
-
-```
-
-*The API will be available at `http://127.0.0.setup:8000*`
-*Interactive Swagger Documentation available at `http://127.0.0.1:8000/docs*`
+![Split Screen Demo](images/demo-placeholder.gif) 
+*(Note: Replace with your actual split-screen GIF/Video once recorded)*
 
 ---
 
-## 📡 API Usage
+## 🏗️ Technical Architecture
+
+LumenSense is built for scale and ease of integration by modern engineering teams.
+
+* **Core Framework:** FastAPI (Python)
+* **Inference Engine:** Groq API (Llama-3.3-70b-versatile)
+* **Data Validation:** Pydantic
+* **Deployment:** Serverless / Containerized (Render)
+* **Alerting:** Native Webhook payloads (Slack Block Kit compatible)
+
+---
+
+## 🔌 API Integration Quickstart
+
+Integrating LumenSense requires just a single HTTP POST request. 
 
 **Endpoint:** `POST /analyze`
 
-**Request Payload:**
-
+**Request Body:**
 ```json
 {
-  "chat_log": "I've been looking at your pricing page for an hour. I love the features, but I'm worried it won't integrate with our legacy systems."
+  "chat_log": "I like the platform, but my CTO won't approve the budget unless we can confirm you have on-premise hosting options and SOC-2 compliance."
 }
 
 ```
@@ -108,13 +66,54 @@ uvicorn main:app --reload
 ```json
 {
   "profile": {
-    "persona": "Tech-savvy evaluator",
-    "sentiment": "Cautious",
-    "buying_intent": 60
+    "persona": "Technical Decision Maker",
+    "sentiment": "Cautious but interested",
+    "buying_intent": 85
   },
   "insights": {
-    "main_concern": "System integration capabilities",
-    "tactical_advice": "Offer a technical demo or free trial to alleviate integration concerns."
+    "main_concern": "Security and compliance standards",
+    "tactical_advice": "Bypass the standard pitch. Immediately provide SOC-2 documentation and route to a technical Account Executive."
   },
   "is_hot_lead": true
 }
+
+```
+
+*(Note: When `is_hot_lead` returns `true`, the LumenSense backend can be configured to automatically dispatch a webhook to your CRM or Slack workspace).*
+
+---
+
+## 💻 Local Development
+
+1. **Clone the repository:**
+```bash
+git clone [https://github.com/YOUR_USERNAME/LumenSenseAPI.git](https://github.com/YOUR_USERNAME/LumenSenseAPI.git)
+cd LumenSenseAPI
+
+```
+
+
+2. **Install dependencies:**
+```bash
+pip install -r requirements.txt
+
+```
+
+
+3. **Environment Setup:**
+Create a `.env` file and add your credentials:
+```env
+GROQ_API_KEY=your_groq_api_key_here
+SLACK_WEBHOOK_URL=your_optional_slack_url_here
+
+```
+
+
+4. **Run the server:**
+```bash
+uvicorn main:app --reload
+
+```
+
+
+*Interactive Swagger Documentation is automatically generated at `http://127.0.0.1:8000/docs*`
