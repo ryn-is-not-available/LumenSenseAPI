@@ -87,7 +87,7 @@ Integrating LumenSense requires just a single HTTP POST request.
 
 1. **Clone the repository:**
 ```bash
-git clone [https://github.com/YOUR_USERNAME/LumenSenseAPI.git](https://github.com/YOUR_USERNAME/LumenSenseAPI.git)
+git clone [https://github.com/ryn-is-not-available/LumenSenseAPI.git](https://github.com/ryn-is-not-available/LumenSenseAPI.git)
 cd LumenSenseAPI
 
 ```
