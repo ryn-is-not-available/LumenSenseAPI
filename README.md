@@ -26,8 +26,7 @@ AI bots are great at deflecting tier-1 support tickets, but terrible at closing 
    git clone [https://github.com/ryn-is-not-available/LumenSenseAPI.git](https://github.com/ryn-is-not-available/LumenSenseAPI.git)
    cd LumenSenseAPI
 
-```
-```
+
 2. **Install dependencies:**
 ```bash
 pip install -r requirements.txt
