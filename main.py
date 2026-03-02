@@ -1,10 +1,20 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Security, Depends
+from fastapi.security.api_key import APIKeyHeader
 from pydantic import BaseModel
 from shared.analyzer import LumenSenseAnalyzer
 import os
 from dotenv import load_dotenv
 import requests
 
+api_key_header = APIKeyHeader(name="X-API-Key", auto_error=True)  # For future API key security implementation
+
+REAL_API_KEY = os.getenv("LUMENSENSE_API_KEY")
+
+def get_api_key(api_key: str = Security(api_key_header)):
+    if api_key == REAL_API_KEY:
+        return api_key_header
+    
+    raise HTTPException(status_code=401, detail="Invalid API Key, Access Denied")
 # 1. Initialize the App (Updated description for the new business model!)
 app = FastAPI(title="LumenSense API", description="AI Triage Engine for B2B Sales")
 
@@ -97,7 +107,7 @@ def fire_slack_alert(profile, insights, original_text):
 # 4. Define the Route
 # ==========================================
 @app.post("/api/analyze")
-async def analyze_chat(request: ChatRequest):
+async def analyze_chat(request: ChatRequest, api_key: str = Depends(get_api_key)):
     if not request.chat_log.strip():
         raise HTTPException(status_code=400, detail="chat_log cannot be empty")
     
