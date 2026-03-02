@@ -1,6 +1,7 @@
 from fastapi import FastAPI, HTTPException, Security, Depends
 from fastapi.security.api_key import APIKeyHeader
 from pydantic import BaseModel
+from typing import List
 from shared.analyzer import LumenSenseAnalyzer
 import os
 from dotenv import load_dotenv
@@ -19,10 +20,15 @@ def get_api_key(api_key: str = Security(api_key_header)):
 app = FastAPI(title="LumenSense API", description="AI Triage Engine for B2B Sales")
 
 # 2. Define the expected input (Pydantic makes sure the user sends the right data)
-class ChatRequest(BaseModel):
-    chat_log: str
+class Message(BaseModel):
+    role: str  # "user" or "system"
+    content: str
 
-# 3. Instantiate our Chef
+
+class ChatRequest(BaseModel):
+    messages: List[Message]  # We expect a list of messages to better mimic real chat interactions
+
+# 3. Initialize the Analyzer 
 analyzer = LumenSenseAnalyzer()
 
 # ==========================================
@@ -108,23 +114,31 @@ def fire_slack_alert(profile, insights, original_text):
 # ==========================================
 @app.post("/api/analyze")
 async def analyze_chat(request: ChatRequest, api_key: str = Depends(get_api_key)):
-    if not request.chat_log.strip():
-        raise HTTPException(status_code=400, detail="chat_log cannot be empty")
+    
+    # 1. VALIDATION: Check if the messages list is empty
+    if not request.messages:
+        raise HTTPException(status_code=400, detail="Messages array cannot be empty")
     
     try:
-        # Pass the data to the LumenSenseAnalyzer and get the insights
-        result = analyzer.analyze(request.chat_log)
+        # 2. STITCHING: Turn the array of messages into a single readable transcript
+        transcript = "\n".join([f"{msg.role.capitalize()}: {msg.content}" for msg in request.messages])
         
-        # 🎯 NEW: Triage check! Wake up the human sales team if it's a whale.
-        # (Assuming your analyzer returns a dictionary)
+        # 3. ANALYSIS: Pass the compiled transcript to the LumenSenseAnalyzer
+        result = analyzer.analyze(transcript)
+        
+        # 4. Wake up the sales team if it's a whale.
         if result.get("is_hot_lead"):
             fire_slack_alert(
                 profile=result.get("profile", {}),
                 insights=result.get("insights", {}),
-                original_text=request.chat_log
+                original_text=transcript  # Changed this to send the full history to Slack!
             )
             
         return result
+        
+    except Exception as e:
+        # Failing gracefully is crucial for production!
+        raise HTTPException(status_code=500, detail=f"Analysis failed: {str(e)}")
         
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
