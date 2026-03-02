@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException, Security, Depends
+from fastapi import FastAPI, HTTPException, Security, Depends , BackgroundTasks
 from fastapi.security.api_key import APIKeyHeader
 from pydantic import BaseModel
 from typing import List
@@ -113,7 +113,11 @@ def fire_slack_alert(profile, insights, original_text):
 # 4. Define the Route
 # ==========================================
 @app.post("/api/analyze")
-async def analyze_chat(request: ChatRequest, api_key: str = Depends(get_api_key)):
+async def analyze_chat(
+    request: ChatRequest, 
+    background_tasks: BackgroundTasks,
+    api_key: str = Depends(get_api_key)
+):
     
     # 1. VALIDATION: Check if the messages list is empty
     if not request.messages:
@@ -126,15 +130,21 @@ async def analyze_chat(request: ChatRequest, api_key: str = Depends(get_api_key)
         # 3. ANALYSIS: Pass the compiled transcript to the LumenSenseAnalyzer
         result = analyzer.analyze(transcript)
         
-        # 4. Wake up the sales team if it's a whale.
+        # 4. Wake up the sales team if it's a whale (NOW IN THE BACKGROUND ⚡)
         if result.get("is_hot_lead"):
-            fire_slack_alert(
+            # We hand the Slack ping to FastAPI's background worker so we can hang up instantly!
+            background_tasks.add_task(
+                fire_slack_alert,
                 profile=result.get("profile", {}),
                 insights=result.get("insights", {}),
-                original_text=transcript  # Changed this to send the full history to Slack!
+                original_text=transcript  
             )
             
         return result
+        
+    except Exception as e:
+        # 5. FALLBACK: Never crash a client's chatbot. Fail gracefully.
+        raise HTTPException(status_code=500, detail=f"Analysis failed: {str(e)}")
         
     except Exception as e:
         # Failing gracefully is crucial for production!
