@@ -108,5 +108,3 @@ This project is fully ready to be deployed on Render, Heroku, or Railway. Simply
 ---
 
 *Built by Massek Rayen - [LinkedIn*](https://www.linkedin.com/in/rayen-messek-206322249/)
-
-```
